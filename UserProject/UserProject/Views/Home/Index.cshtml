@@ -1,0 +1,26 @@
+﻿@*@model User*@
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron" dir="rtl">
+    <h1>سامانه ثبت ساعت ورود و خروج</h1>
+    <p class="lead">بهترین سامانه ی ثبت ورود و خروج کل کهکشان راه شیری.</p>
+</div>
+
+<div class="row">
+
+    <div class="col-md-12" dir="rtl">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <h3>
+                @Html.ActionLink("ثبت درخواست جدید", "Index", "Requests")
+            </h3>
+        }
+        else
+        {
+            <h3>شما هنوز به حساب کاربری خود وارد نشده اید!</h3>
+        }
+    </div>
+</div>
