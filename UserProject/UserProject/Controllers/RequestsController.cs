@@ -14,7 +14,7 @@ namespace UserProject.Controllers
 {
     public class RequestsController : Controller
     {
-        
+
         private IRequestRepository repository;
         private ApplicationDbContext db = new ApplicationDbContext();
 
@@ -23,16 +23,29 @@ namespace UserProject.Controllers
             repository = new RequestRepository();
         }
         // GET: Requests
-        public ActionResult Index()
+        public ActionResult Index(string sortOrder, string searchString)
         {
             ViewBag.ID = User.Identity.GetUserId();
-
+            ViewBag.CurrentDate = GetPersianTime.GetPersainDateTime()[0];
             var userid = User.Identity.GetUserId();
-            //اینجا مشکل داره هنوز
+
             var requests = repository.GetRequestByUserID(userid);
             requests = requests.OrderBy(s => s.RequestTime);
 
-            return View(SetRequestView.SetRequest(requests));
+            var requestViews = SetRequestView.SetRequest(requests);
+
+            if (!string.IsNullOrEmpty(searchString))
+                requestViews = requestViews.Where(w => w.Date == searchString).ToList();
+
+
+            if (sortOrder == "Date")
+                requestViews = requestViews.OrderByDescending(o => o.Date).ThenBy(o => o.ArrivalTime).ToList();
+            else if (sortOrder == "WorkingTime")
+                requestViews = requestViews.OrderByDescending(o => o.WorkingTime).ThenBy(o => o.Name).ToList();
+            else
+                requestViews = requestViews.OrderBy(o => o.Name).ThenBy(o => o.Date).ToList();
+
+            return View(requestViews);
         }
 
         // GET: Requests/Details/5
@@ -71,16 +84,16 @@ namespace UserProject.Controllers
             {
                 if (string.IsNullOrEmpty(request.Time))
                 {
-                    request.Time= GetPersianTime.GetPersainDateTime()[1];
+                    request.Time = GetPersianTime.GetPersainDateTime()[1];
                 }
                 if (string.IsNullOrEmpty(request.Date))
                 {
-                    request.Date= GetPersianTime.GetPersainDateTime()[0];
+                    request.Date = GetPersianTime.GetPersainDateTime()[0];
                 }
                 request.RequestTime = TimeSetting.SetTime(request.Time, request.Date);
 
                 var Res = repository.GetRequestsByDate(request.RequestTime, User.Identity.GetUserId());
-                foreach(var index in Res)
+                foreach (var index in Res)
                 {
                     if (index.Type == request.Type)
                     {
