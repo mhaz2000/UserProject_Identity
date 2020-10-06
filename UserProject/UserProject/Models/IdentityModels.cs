@@ -44,5 +44,7 @@ namespace IdentitySample.Models
         }
 
         public System.Data.Entity.DbSet<UserProject.Request> Requests { get; set; }
+
+        //public System.Data.Entity.DbSet<UserProject.RequestView> RequestViews { get; set; }
     }
 }

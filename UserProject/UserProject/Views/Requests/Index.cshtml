@@ -4,18 +4,19 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2 dir="rtl">درخواست ها</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
+<p dir="rtl">
+    @Html.ActionLink("ثبت درخواست جدید", "Create")
 </p>
 @using (Html.BeginForm())
 {
-    <p>
-        Find by date: @Html.TextBox("searchString", "", new { @class = "form-control", @placeholder = ViewBag.CurrentDate })
+    <div dir="rtl">
+        
+        جستجو بر اساس تاریخ: @Html.TextBox("searchString", "", new { @class = "form-control", @placeholder = ViewBag.CurrentDate })
         <br />
         <input type="submit" value="Search" />
-    </p>
+    </div>
 }
 <table class="table">
     <tr>

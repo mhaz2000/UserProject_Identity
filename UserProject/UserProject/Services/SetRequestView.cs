@@ -53,7 +53,7 @@ namespace UserProject
                 else //if there is a duplicate date, sets exit or arrival time
                 {
                     string date = pc.GetYear(v.RequestTime).ToString() + "/" + pc.GetMonth(v.RequestTime).ToString("00") + "/" + pc.GetDayOfMonth(v.RequestTime).ToString("00");
-                    var Res = RequestViews.Where(w => w.Date == date).FirstOrDefault();
+                    var Res = RequestViews.Where(w => w.Date == date && w.Name==v.User.Name).FirstOrDefault();
                     if (Res.ExitTime == "-")
                     {
                         Res.ExitTime = pc.GetHour(v.RequestTime).ToString("00") + ":" + pc.GetMinute(v.RequestTime).ToString("00");
@@ -70,8 +70,20 @@ namespace UserProject
                         }
                     }
                     else
+                    {
                         Res.ArrivalTime = pc.GetHour(v.RequestTime).ToString("00") + ":" + pc.GetMinute(v.RequestTime).ToString("00");
+                        string[] Arrival = Res.ArrivalTime.Split(':');
+                        string[] Exit = Res.ExitTime.Split(':');
 
+                        if (Convert.ToInt32(Arrival[1]) > Convert.ToInt32(Exit[1]))
+                        {
+                            Res.WorkingTime = (Convert.ToInt32(Exit[0]) - Convert.ToInt32(Arrival[0]) - 1).ToString("00") + ":" + (Convert.ToInt32(Exit[1]) - Convert.ToInt32(Arrival[1]) + 60).ToString("00");
+                        }
+                        else
+                        {
+                            Res.WorkingTime = (Convert.ToInt32(Exit[0]) - Convert.ToInt32(Arrival[0])).ToString("00") + ":" + (Convert.ToInt32(Exit[1]) - Convert.ToInt32(Arrival[1])).ToString("00");
+                        }
+                    }
                     dateTimes.Clear();
                 }
             }

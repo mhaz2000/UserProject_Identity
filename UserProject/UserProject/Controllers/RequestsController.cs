@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using IdentitySample.Models;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using UserProject;
 
 namespace UserProject.Controllers
@@ -23,11 +24,16 @@ namespace UserProject.Controllers
             repository = new RequestRepository();
         }
         // GET: Requests
-        public ActionResult Index(string sortOrder, string searchString)
+        public ActionResult Index(string sortOrder, string searchString, string ID)
         {
-            ViewBag.ID = User.Identity.GetUserId();
+            //get current date in persian format
             ViewBag.CurrentDate = GetPersianTime.GetPersainDateTime()[0];
-            var userid = User.Identity.GetUserId();
+            string userid = string.Empty;
+            
+            if (ID == null)
+                userid = User.Identity.GetUserId();
+            else
+                userid = ID;
 
             var requests = repository.GetRequestByUserID(userid);
             requests = requests.OrderBy(s => s.RequestTime);
@@ -37,7 +43,7 @@ namespace UserProject.Controllers
             if (!string.IsNullOrEmpty(searchString))
                 requestViews = requestViews.Where(w => w.Date == searchString).ToList();
 
-
+            //sorting by date
             if (sortOrder == "Date")
                 requestViews = requestViews.OrderByDescending(o => o.Date).ThenBy(o => o.ArrivalTime).ToList();
             else if (sortOrder == "WorkingTime")
@@ -79,7 +85,7 @@ namespace UserProject.Controllers
         public ActionResult Create([Bind(Include = "RequestID,Type,Time,Date")] Request request)
         {
             ViewBag.Message = string.Empty;
-            //چک کردن اینکه آیا در هر روز بیش از دو ورود نزد و سفارشی کردن کاربر و اضافه کردن اسم و فامیل
+            
             if (ModelState.IsValid)
             {
                 if (string.IsNullOrEmpty(request.Time))
@@ -92,6 +98,7 @@ namespace UserProject.Controllers
                 }
                 request.RequestTime = TimeSetting.SetTime(request.Time, request.Date);
 
+                //checks if someone insert two request with same type in a particular date.
                 var Res = repository.GetRequestsByDate(request.RequestTime, User.Identity.GetUserId());
                 foreach (var index in Res)
                 {
@@ -111,17 +118,36 @@ namespace UserProject.Controllers
         }
 
         // GET: Requests/Edit/5
-        //public ActionResult Edit(Guid? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    Request request = repository.GetRequestByID(id);
-        //    if (request == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
+        public ActionResult AllRequests(string name)
+        {
+            //droplist options
+            var Users = repository.GetallUsersNames();
+            SelectList list = new SelectList(Users);
+            ViewBag.AllUsers = list;
+
+            //Show all requests of the selected person
+            List<Request> requests;
+            if (string.IsNullOrEmpty(name))
+                requests = repository.GetAllRequests();
+            else
+                requests = repository.GetRequestsByName(name);
+
+
+            requests = requests.OrderByDescending(s => s.UserID).ThenBy(t=>t.RequestTime).ToList();
+            return View(SetRequestView.SetRequest(requests));
+        }
+
+            //public ActionResult Edit(Guid? id)
+            //{
+            //    if (id == null)
+            //    {
+            //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            //    }
+            //    Request request = repository.GetRequestByID(id);
+            //    if (request == null)
+            //    {
+            //        return HttpNotFound();
+            //    }
 
         //    return View(SetRequestView.SetRequest(request));
         //}

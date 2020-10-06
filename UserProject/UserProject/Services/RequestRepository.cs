@@ -1,4 +1,5 @@
 ﻿using IdentitySample.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace UserProject
     public class RequestRepository : IRequestRepository
     {
         ApplicationDbContext DB = new ApplicationDbContext();
+
         /// <summary>
         /// Add new request
         /// </summary>
@@ -70,7 +72,7 @@ namespace UserProject
         /// Gets all requests
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Request> GetAllRequests()
+        public List<Request> GetAllRequests()
         {
             return DB.Requests.ToList();
         }
@@ -112,7 +114,7 @@ namespace UserProject
                 return false;
             }
         }
-        
+
         public void Dispose()
         {
             DB.Dispose();
@@ -134,10 +136,10 @@ namespace UserProject
         /// <param name="Date"></param>
         /// <param name="userid"></param>
         /// <returns></returns>
-        public List<Request> GetRequestsByDate(DateTime Date,string userid)
+        public List<Request> GetRequestsByDate(DateTime Date, string userid)
         {
-            
-            return DB.Requests.Where(w => w.RequestTime.Year == Date.Year && w.RequestTime.Month == Date.Month && w.RequestTime.Day == Date.Day  && w.User.Id==userid).ToList();
+
+            return DB.Requests.Where(w => w.RequestTime.Year == Date.Year && w.RequestTime.Month == Date.Month && w.RequestTime.Day == Date.Day && w.User.Id == userid).ToList();
         }
 
         /// <summary>
@@ -149,6 +151,20 @@ namespace UserProject
         {
             var res = DB.Requests.Where(w => w.RequestID == ID).FirstOrDefault();
             return res.RequestTime;
+        }
+        public List<string> GetallUsersNames()
+        {
+            var userStore = new UserStore<ApplicationUser>(DB);
+            List<string> Names = new List<string>();
+            foreach (var user in userStore.Users)
+            {
+                Names.Add(user.Name);
+            }
+            return Names;
+        }
+        public List<Request> GetRequestsByName(string name)
+        {
+            return DB.Requests.Where(w => w.User.Name == name).ToList();
         }
     }
 }

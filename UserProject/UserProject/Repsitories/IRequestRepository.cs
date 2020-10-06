@@ -8,7 +8,7 @@ namespace UserProject
 {
     interface IRequestRepository : IDisposable
     {
-        IEnumerable<Request> GetAllRequests();
+        List<Request> GetAllRequests();
         List<Request> GetRequestsByDate(DateTime Date, string userid);
         Request GetRequestByID(object ID);
         IEnumerable<Request> GetRequestByUserID(string ID);
@@ -17,6 +17,8 @@ namespace UserProject
         bool UpdateRequest(Request request, object userID);
         bool DeleteRequest(Request request);
         bool DeleteRequest(object ID);
+        List<string> GetallUsersNames();
+        List<Request> GetRequestsByName(string name);
         void Save();
     }
 }

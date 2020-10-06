@@ -218,7 +218,6 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="Context\UserDB.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -236,7 +235,7 @@
     <Compile Include="Models\RequestView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repsitories\IRequestRepository.cs" />
-    <Compile Include="Services\GetPersianTime.cs" />
+    <Compile Include="TimeSet\GetPersianTime.cs" />
     <Compile Include="Services\RequestRepository.cs" />
     <Compile Include="Services\SetRequestView.cs" />
     <Compile Include="Startup.cs" />
@@ -251,6 +250,7 @@
     <Content Include="Views\Requests\Details.cshtml" />
     <Content Include="Views\Requests\Edit.cshtml" />
     <Content Include="Views\Requests\Index.cshtml" />
+    <Content Include="Views\Requests\AllRequests.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
