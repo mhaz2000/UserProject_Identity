@@ -149,7 +149,7 @@ namespace IdentitySample.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, Name = model.Name };
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, Name = model.Name, NationalCode = model.NationalCode };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -389,7 +389,7 @@ namespace IdentitySample.Controllers
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
-        
+
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut();

@@ -1,4 +1,6 @@
 ﻿using IdentitySample.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using System.Data.Entity;
 using System.Linq;
@@ -6,6 +8,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using UserProject;
 
 namespace IdentitySample.Controllers
 {
@@ -51,9 +54,11 @@ namespace IdentitySample.Controllers
         //
         // GET: /Users/
         [HttpGet]
-        public async Task<ActionResult> Index()
+        public ActionResult Index()
         {
-            return View(await UserManager.Users.ToListAsync());
+            var userView =SetUserInfo.UserInfoSetting(UserManager.Users.ToList());
+            //return View(await UserManager.Users.ToListAsync());
+            return View(userView);
         }
 
         //

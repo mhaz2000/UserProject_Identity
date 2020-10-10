@@ -11,12 +11,32 @@
 </p>
 @using (Html.BeginForm())
 {
-    <div dir="rtl">
-        
-        جستجو بر اساس تاریخ: @Html.TextBox("searchString", "", new { @class = "form-control", @placeholder = ViewBag.CurrentDate })
+    List<SelectListItem>
+                items = new List<SelectListItem>
+                    ();
+    items.Add(new SelectListItem { Text = "تایید شده", Value = "تایید شده" });
+    items.Add(new SelectListItem { Text = "رد شده", Value = "رد شده" });
+    items.Add(new SelectListItem { Text = "در انتظار تایید", Value = "در انتظار تایید" });
+    items.Add(new SelectListItem { Text = "همه", Value = "همه", Selected = true });
+
+    @*<div dir="rtl" class="col-md-6">
         <br />
+        @Html.DropDownList("state", items, "وضعیت", new { onchange = "this.form.submit();" })
+
+    </div>*@
+
+
+    <div dir="rtl" @*class="col-md-6"*@>
+        <h3>جستجو بر اساس تاریخ:</h3>
+
+        از تاریخ: @Html.TextBox("date1", "", new { @class = "form-control", @placeholder = ViewBag.CurrentDate })
+
+        تا تاریخ: @Html.TextBox("date2", "", new { @class = "form-control", @placeholder = ViewBag.CurrentDate })
         <input type="submit" value="Search" />
+
     </div>
+    
+
 }
 <table class="table">
     <tr>
@@ -24,9 +44,12 @@
             @Html.DisplayNameFor(model => model.Name)
         </th>
         <th>
-            @*@Html.DisplayNameFor(model => model.Date)*@
-            @Html.ActionLink("تاریخ", "Index", new { sortOrder = "Date" })
+            @Html.DisplayNameFor(model => model.Date)
+            @*@Html.ActionLink("تاریخ", "Index", new { sortOrder = "Date" })*@
 
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DayOfWeek)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.ArrivalTime)
@@ -35,10 +58,14 @@
             @Html.DisplayNameFor(model => model.ExitTime)
         </th>
         <th>
-            @*@Html.DisplayNameFor(model => model.WorkingTime)*@
-            @Html.ActionLink("مدت زمان کار", "Index", new { sortOrder = "WorkingTime" })
+            @Html.DisplayNameFor(model => model.WorkingTime)
+            @*@Html.ActionLink("مدت زمان کار", "Index", new { sortOrder = "WorkingTime" })*@
 
         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.State)
+        </th>
+
     </tr>
 
     @foreach (var item in Model)
@@ -51,6 +78,9 @@
                 @Html.DisplayFor(modelItem => item.Date)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.DayOfWeek)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.ArrivalTime)
             </td>
             <td>
@@ -60,11 +90,17 @@
                 @Html.DisplayFor(modelItem => item.WorkingTime)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.State)
+            </td>
+            <td>
                 @*@Html.ActionLink("Edit", "Edit", new { id = item.ID }) |*@
-                @Html.ActionLink("Details", "Details", new { id = item.ID })
+                @*@Html.ActionLink("Details", "Details", new { id = item.ID })*@
                 @*@Html.ActionLink("Delete", "Delete", new { id = item.ID })*@
             </td>
         </tr>
     }
 
 </table>
+<h3 dir="rtl">
+    مدت زمان کار: @ViewBag.AllWorkingTime
+</h3>

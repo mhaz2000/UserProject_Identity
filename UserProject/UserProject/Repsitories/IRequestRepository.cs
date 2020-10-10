@@ -18,7 +18,8 @@ namespace UserProject
         bool DeleteRequest(Request request);
         bool DeleteRequest(object ID);
         List<string> GetallUsersNames();
-        List<Request> GetRequestsByName(string name);
+        List<Request> GetRequestsByNameAndState(string name,string state);
+        List<Request> GetRequestsByDatePeriod(DateTime time1, DateTime time2, string userid);
         void Save();
     }
 }

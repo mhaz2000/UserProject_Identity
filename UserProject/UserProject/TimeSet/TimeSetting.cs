@@ -8,6 +8,18 @@ namespace UserProject
     public class TimeSetting
     {
         /// <summary>
+        /// set time
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static DateTime SetTime(string date)
+        {
+            System.Globalization.PersianCalendar pc = new System.Globalization.PersianCalendar();
+            string[] firstTime = date.Split('/');
+
+            return(new DateTime(Convert.ToInt32(firstTime[0]), Convert.ToInt32(firstTime[1]), Convert.ToInt32(firstTime[2]), pc));
+        }
+        /// <summary>
         /// Set Time
         /// </summary>
         /// <param name="time"></param>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>@ViewBag.Title - سامانه ی ورود و خروج</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 
@@ -23,10 +23,10 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("صفحه ی اصلی", "Index", "Home")</li>
 
-                    @if (Request.IsAuthenticated && User.IsInRole("Admin")) {
+                    @*@if (Request.IsAuthenticated && User.IsInRole("Admin")) {
                         <li>@Html.ActionLink("لیست درخواست ها", "AllRequests", "Requests")</li>
                         <li>@Html.ActionLink("لیست کاربران", "Index", "UsersAdmin")</li>
-                    }
+                    }*@
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>

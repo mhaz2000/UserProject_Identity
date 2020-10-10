@@ -23,12 +23,17 @@ namespace UserProject
         [Required]
         public DateTime RequestTime { get; set; }
 
+        [Required]
+        [Display(Name ="وضعیت درخواست")]
+        public string State { get; set; }
+
         [Display(Name ="تاریخ")]
         [NotMapped]
         public string Date { get; set; }
         [Display(Name ="ساعت")]
         [NotMapped]
         public string Time { get; set; }
+
 
         //ForeignKey
         public string UserID { get; set; }

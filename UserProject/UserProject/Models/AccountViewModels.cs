@@ -84,6 +84,11 @@ namespace IdentitySample.Models
         [DataType(DataType.Text)]
         [Display(Name ="نام و نام خانوادگی")]
         public string Name { get; set; }
+
+        [Required]
+        [DataType(DataType.Text)]
+        [Display(Name = "کد ملی")]
+        public string NationalCode { get; set; }
     }
 
     public class ResetPasswordViewModel

@@ -24,32 +24,42 @@ namespace UserProject.Controllers
             repository = new RequestRepository();
         }
         // GET: Requests
-        public ActionResult Index(string sortOrder, string searchString, string ID)
+        public ActionResult Index(string sortOrder, string date1, string date2, string ID)
         {
+            IEnumerable<Request> requests = new List<Request>();
             //get current date in persian format
             ViewBag.CurrentDate = GetPersianTime.GetPersainDateTime()[0];
             string userid = string.Empty;
-            
+
             if (ID == null)
                 userid = User.Identity.GetUserId();
             else
                 userid = ID;
 
-            var requests = repository.GetRequestByUserID(userid);
+            if (!string.IsNullOrEmpty(date1) && !string.IsNullOrEmpty(date2))
+            {
+                DateTime firstTime = TimeSetting.SetTime(date1);
+                DateTime secondTime = TimeSetting.SetTime(date2);
+
+                requests = repository.GetRequestsByDatePeriod(firstTime, secondTime, userid);
+            }
+            else
+                requests = repository.GetRequestByUserID(userid);
+
             requests = requests.OrderBy(s => s.RequestTime);
 
             var requestViews = SetRequestView.SetRequest(requests);
 
-            if (!string.IsNullOrEmpty(searchString))
-                requestViews = requestViews.Where(w => w.Date == searchString).ToList();
+            ViewBag.AllWorkingTime = AllWorkTimeCalculation.AllWorkTimeSum(requestViews);
 
-            //sorting by date
-            if (sortOrder == "Date")
-                requestViews = requestViews.OrderByDescending(o => o.Date).ThenBy(o => o.ArrivalTime).ToList();
-            else if (sortOrder == "WorkingTime")
-                requestViews = requestViews.OrderByDescending(o => o.WorkingTime).ThenBy(o => o.Name).ToList();
-            else
-                requestViews = requestViews.OrderBy(o => o.Name).ThenBy(o => o.Date).ToList();
+
+            ////sorting by date
+            //if (sortOrder == "Date")
+            //    requestViews = requestViews.OrderByDescending(o => o.Date).ThenBy(o => o.ArrivalTime).ToList();
+            //else if (sortOrder == "WorkingTime")
+            //    requestViews = requestViews.OrderByDescending(o => o.WorkingTime).ThenBy(o => o.Name).ToList();
+            //else
+            //requestViews = requestViews.OrderBy(o => o.Name).ThenBy(o => o.Date).ToList();
 
             return View(requestViews);
         }
@@ -85,69 +95,103 @@ namespace UserProject.Controllers
         public ActionResult Create([Bind(Include = "RequestID,Type,Time,Date")] Request request)
         {
             ViewBag.Message = string.Empty;
-            
-            if (ModelState.IsValid)
+
+
+            //if (ModelState.IsValid)
+            //{
+            if (string.IsNullOrEmpty(request.Time))
             {
-                if (string.IsNullOrEmpty(request.Time))
-                {
-                    request.Time = GetPersianTime.GetPersainDateTime()[1];
-                }
-                if (string.IsNullOrEmpty(request.Date))
-                {
-                    request.Date = GetPersianTime.GetPersainDateTime()[0];
-                }
-                request.RequestTime = TimeSetting.SetTime(request.Time, request.Date);
+                request.Time = GetPersianTime.GetPersainDateTime()[1];
+            }
+            if (string.IsNullOrEmpty(request.Date))
+            {
+                request.Date = GetPersianTime.GetPersainDateTime()[0];
+            }
+            request.RequestTime = TimeSetting.SetTime(request.Time, request.Date);
 
-                //checks if someone insert two request with same type in a particular date.
-                var Res = repository.GetRequestsByDate(request.RequestTime, User.Identity.GetUserId());
-                foreach (var index in Res)
+            //checks if someone insert two request with same type in a particular date.
+            var Res = repository.GetRequestsByDate(request.RequestTime, User.Identity.GetUserId());
+            foreach (var index in Res)
+            {
+                if (index.Type == request.Type)
                 {
-                    if (index.Type == request.Type)
-                    {
-                        ViewBag.Message = "در یک تاریخ نمی توانید بیش از یک ورود یا خروج ثبت کنید!";
-                        return View(request);
-                    }
+                    ViewBag.Message = "در یک تاریخ نمی توانید بیش از یک ورود یا خروج ثبت کنید!";
+                    return View(request);
                 }
-
-                repository.AddRequest(request, User.Identity.GetUserId());
-                repository.Save();
-                return RedirectToAction("Index");
             }
 
-            return View(request);
+            request.State = "در انتظار تایید";
+            repository.AddRequest(request, User.Identity.GetUserId());
+            repository.Save();
+            return RedirectToAction("Index");
+            //}
+
+            //return View(request);
         }
 
         // GET: Requests/Edit/5
-        public ActionResult AllRequests(string name)
+        public ActionResult AllRequests(string name, string state, string date1, string date2)
         {
+            ViewBag.CurrentDate = GetPersianTime.GetPersainDateTime()[0];
+
             //droplist options
             var Users = repository.GetallUsersNames();
             SelectList list = new SelectList(Users);
             ViewBag.AllUsers = list;
 
+            
             //Show all requests of the selected person
-            List<Request> requests;
-            if (string.IsNullOrEmpty(name))
-                requests = repository.GetAllRequests();
-            else
-                requests = repository.GetRequestsByName(name);
+            List<Request> requests = repository.GetRequestsByNameAndState(name, state);
+
+            if (!string.IsNullOrEmpty(date1) && !string.IsNullOrEmpty(date2))
+            {
+
+                DateTime firstTime = TimeSetting.SetTime(date1);
+                DateTime secondTime = TimeSetting.SetTime(date2);
+
+                requests = requests.Where(w => (w.RequestTime.Year >= firstTime.Year && w.RequestTime.Month >= firstTime.Month && w.RequestTime.Day >= firstTime.Day)
+              && (w.RequestTime.Year <= secondTime.Year && w.RequestTime.Month <= secondTime.Month && w.RequestTime.Day <= secondTime.Day)).ToList();
+            }
+            requests = requests.OrderByDescending(s => s.UserID).ThenBy(t => t.RequestTime).ToList();
+
+            var result = SetRequestView.SetRequest(requests);
+            ViewBag.AllWorkingTime = AllWorkTimeCalculation.AllWorkTimeSum(result);
 
 
-            requests = requests.OrderByDescending(s => s.UserID).ThenBy(t=>t.RequestTime).ToList();
-            return View(SetRequestView.SetRequest(requests));
+            return View(result);
         }
 
-            //public ActionResult Edit(Guid? id)
-            //{
-            //    if (id == null)
-            //    {
-            //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            //    }
-            //    Request request = repository.GetRequestByID(id);
-            //    if (request == null)
-            //    {
-            //        return HttpNotFound();
-            //    }
+        /// <summary>
+        /// set a request state
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="State"></param>
+        /// <returns></returns>
+        public ActionResult SetState(DateTime date, string State, string id)
+        {
+            System.Globalization.PersianCalendar pc = new System.Globalization.PersianCalendar();
+
+            var request = repository.GetRequestsByDate(new DateTime(date.Year, date.Month, date.Day, pc), id);
+
+            foreach (var v in request)
+            {
+                v.State = State;
+            }
+            repository.Save();
+            return RedirectToAction("AllRequests");
+
+        }
+        //public ActionResult Edit(Guid? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Request request = repository.GetRequestByID(id);
+        //    if (request == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
 
         //    return View(SetRequestView.SetRequest(request));
         //}

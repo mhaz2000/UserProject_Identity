@@ -14,9 +14,22 @@
     <div class="col-md-12" dir="rtl">
         @if (User.Identity.IsAuthenticated)
         {
-            <h3>
-                @Html.ActionLink("ثبت درخواست جدید", "Index", "Requests")
-            </h3>
+            if (!User.IsInRole("Admin"))
+            {
+                <h3>
+                    @Html.ActionLink("درخواست ها", "Index", "Requests")
+                </h3>
+            }
+            else
+            {
+                <h3>
+                    @Html.ActionLink("لیست درخواست ها", "AllRequests", "Requests")
+                    <br />
+                    <br />
+                    @Html.ActionLink("لیست کاربران", "Index", "UsersAdmin")
+                </h3>
+
+            }
         }
         else
         {

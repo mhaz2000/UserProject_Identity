@@ -1,16 +1,38 @@
 ﻿@model IEnumerable<UserProject.RequestView>
 
 @{
+
     ViewBag.Title = "AllRequests";
 }
 
 <h2 dir="rtl">لیست درخواست ها</h2>
+<form dir="rtl" action="AllRequests">
+    <h3>جستجو بر اساس تاریخ:</h3>
+
+    از تاریخ: @Html.TextBox("date1", "", new { @class = "form-control", @placeholder = ViewBag.CurrentDate })
+    تا تاریخ: @Html.TextBox("date2", "", new { @class = "form-control", @placeholder = ViewBag.CurrentDate })
+
+    <input type="submit" value="Search" style="margin:7px" />
+</form>
+
 <div dir="rtl">
+
     @using (Html.BeginForm())
     {
+        @Html.DropDownList("name", ViewBag.AllUsers as SelectList, "نام کاربر", new { onchange = "this.form.submit();" })
 
-        @Html.DropDownList("name", ViewBag.AllUsers as SelectList, new { onchange = "this.form.submit();", })
+
+        List<SelectListItem> items = new List<SelectListItem>();
+        items.Add(new SelectListItem { Text = "تایید شده", Value = "تایید شده" });
+        items.Add(new SelectListItem { Text = "رد شده", Value = "رد شده" });
+        items.Add(new SelectListItem { Text = "در انتظار تایید", Value = "در انتظار تایید" });
+        items.Add(new SelectListItem { Text = "همه", Value = "همه", Selected = true });
+
+
+        @Html.DropDownList("state", items, "وضعیت", new { onchange = "this.form.submit();" })
+
     }
+
 </div>
 <br />
 <table class="table">
@@ -19,25 +41,43 @@
             @Html.DisplayNameFor(model => model.Name)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.ArrivalTime)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ExitTime)
+            @Html.DisplayNameFor(model => model.NationalCode)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Date)
         </th>
         <th>
+            @Html.DisplayNameFor(model => model.DayOfWeek)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ArrivalTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ExitTime)
+        </th>
+
+        <th>
             @Html.DisplayNameFor(model => model.WorkingTime)
         </th>
+        <th>@Html.DisplayNameFor(model => model.State)</th>
         <th></th>
     </tr>
 
     @foreach (var item in Model)
     {
+
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NationalCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DayOfWeek)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ArrivalTime)
@@ -45,11 +85,20 @@
             <td>
                 @Html.DisplayFor(modelItem => item.ExitTime)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
+
             <td>
                 @Html.DisplayFor(modelItem => item.WorkingTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.State)
+            </td>
+            <td>
+                @if (item.State == "در انتظار تایید")
+                {
+                    @Html.ActionLink("تایید درخواست | ", "SetState", new { id = item.UserID, date = item.Date, state = "تایید شده" })
+
+                    @Html.ActionLink("رد درخواست", "SetState", new { id = item.UserID, date = item.Date, state = "رد شده" })
+                }
             </td>
             @*<td>
                     @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
@@ -60,3 +109,6 @@
     }
 
 </table>
+<h3 dir="rtl">
+    مدت زمان کار: @ViewBag.AllWorkingTime
+</h3>
