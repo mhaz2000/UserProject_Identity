@@ -4,7 +4,14 @@
     ViewBag.Title = "Home Page";
 }
 
-<div class="jumbotron" dir="rtl">
+<head>
+    <style>
+        a{
+            color:black;
+        }
+    </style>
+</head>
+<div class="jumbotron" dir="rtl" style="background-color:darkgray; text-align:center">
     <h1>سامانه ثبت ساعت ورود و خروج</h1>
     <p class="lead">بهترین سامانه ی ثبت ورود و خروج کل کهکشان راه شیری.</p>
 </div>
@@ -16,24 +23,24 @@
         {
             if (!User.IsInRole("Admin"))
             {
-                <h3>
+                <h2 style="text-align:center">
                     @Html.ActionLink("درخواست ها", "Index", "Requests")
-                </h3>
+                </h2>
             }
             else
             {
-                <h3>
+                <h2 style="text-align:center">
                     @Html.ActionLink("لیست درخواست ها", "AllRequests", "Requests")
                     <br />
                     <br />
                     @Html.ActionLink("لیست کاربران", "Index", "UsersAdmin")
-                </h3>
+                </h2>
 
             }
         }
         else
         {
-            <h3>شما هنوز به حساب کاربری خود وارد نشده اید!</h3>
+            <h2 style="text-align:center; margin:20px;">شما هنوز به حساب کاربری خود وارد نشده اید!</h2>
         }
     </div>
 </div>

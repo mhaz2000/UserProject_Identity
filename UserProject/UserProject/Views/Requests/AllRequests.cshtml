@@ -5,6 +5,22 @@
     ViewBag.Title = "AllRequests";
 }
 
+<head>
+    <style>
+        a {
+            color: black;
+        }
+
+            a:hover {
+                color: wheat
+            }
+
+        td, th, tr {
+            text-align: center;
+        }
+    </style>
+</head>
+
 <h2 dir="rtl">لیست درخواست ها</h2>
 <form dir="rtl" action="AllRequests">
     <h3>جستجو بر اساس تاریخ:</h3>
@@ -35,8 +51,8 @@
 
 </div>
 <br />
-<table class="table">
-    <tr>
+<table class="table" style="color:black" dir="rtl">
+    <tr dir="rtl">
         <th>
             @Html.DisplayNameFor(model => model.Name)
         </th>
@@ -66,7 +82,7 @@
     @foreach (var item in Model)
     {
 
-        <tr>
+        <tr dir="rtl">
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
@@ -109,6 +125,6 @@
     }
 
 </table>
-<h3 dir="rtl">
+<h3 dir="rtl" style="color:black">
     مدت زمان کار: @ViewBag.AllWorkingTime
 </h3>

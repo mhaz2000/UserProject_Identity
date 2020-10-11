@@ -24,7 +24,7 @@ namespace UserProject.Controllers
             repository = new RequestRepository();
         }
         // GET: Requests
-        public ActionResult Index(string sortOrder, string date1, string date2, string ID)
+        public ActionResult Index( string date1, string date2, string ID,string requestType)
         {
             IEnumerable<Request> requests = new List<Request>();
             //get current date in persian format
@@ -60,6 +60,14 @@ namespace UserProject.Controllers
             //    requestViews = requestViews.OrderByDescending(o => o.WorkingTime).ThenBy(o => o.Name).ToList();
             //else
             //requestViews = requestViews.OrderBy(o => o.Name).ThenBy(o => o.Date).ToList();
+
+            if (string.IsNullOrEmpty(requestType) || requestType == "تایید شده")
+                requestViews = requestViews.Where(w => w.State == "تایید شده").ToList();
+            else if (requestType == "رد شده")
+                requestViews = requestViews.Where(w => w.State == "رد شده").ToList();
+            else
+                requestViews = requestViews.Where(w => w.State == "در انتظار تایید").ToList();
+
 
             return View(requestViews);
         }
@@ -113,7 +121,7 @@ namespace UserProject.Controllers
             var Res = repository.GetRequestsByDate(request.RequestTime, User.Identity.GetUserId());
             foreach (var index in Res)
             {
-                if (index.Type == request.Type)
+                if (index.Type == request.Type && index.State!="رد شده")
                 {
                     ViewBag.Message = "در یک تاریخ نمی توانید بیش از یک ورود یا خروج ثبت کنید!";
                     return View(request);
@@ -172,6 +180,7 @@ namespace UserProject.Controllers
             System.Globalization.PersianCalendar pc = new System.Globalization.PersianCalendar();
 
             var request = repository.GetRequestsByDate(new DateTime(date.Year, date.Month, date.Day, pc), id);
+            request = request.Where(w => w.State != "رد شده").ToList();
 
             foreach (var v in request)
             {

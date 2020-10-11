@@ -4,6 +4,22 @@
     ViewBag.Title = "Index";
 }
 
+<head>
+    <style>
+        a {
+            color: black;
+            text-decoration: none;
+        }
+
+            a:hover {
+                color: blue;
+            }
+
+        td, th, tr {
+            text-align: center;
+        }
+    </style>
+</head>
 <h2 dir="rtl">درخواست ها</h2>
 
 <p dir="rtl">
@@ -20,26 +36,38 @@
     items.Add(new SelectListItem { Text = "همه", Value = "همه", Selected = true });
 
     @*<div dir="rtl" class="col-md-6">
-        <br />
-        @Html.DropDownList("state", items, "وضعیت", new { onchange = "this.form.submit();" })
+            <br />
+            @Html.DropDownList("state", items, "وضعیت", new { onchange = "this.form.submit();" })
 
-    </div>*@
+        </div>*@
 
 
-    <div dir="rtl" @*class="col-md-6"*@>
+    <div dir="rtl" @*class="col-md-6"*@ style="        margin: 10px">
         <h3>جستجو بر اساس تاریخ:</h3>
 
-        از تاریخ: @Html.TextBox("date1", "", new { @class = "form-control", @placeholder = ViewBag.CurrentDate })
+        <h4 style="        color: black">از تاریخ:</h4> @Html.TextBox("date1", "", new { @class = "form-control", @placeholder = ViewBag.CurrentDate })
 
-        تا تاریخ: @Html.TextBox("date2", "", new { @class = "form-control", @placeholder = ViewBag.CurrentDate })
-        <input type="submit" value="Search" />
+        <h4 style="        color: black">تا تاریخ:</h4> @Html.TextBox("date2", "", new { @class = "form-control", @placeholder = ViewBag.CurrentDate })
+        <input style="        margin: 5px" type="submit" value="Search" />
 
     </div>
-    
+
 
 }
-<table class="table">
-    <tr>
+<div style="margin:20px">
+    @Html.ActionLink("رد شده ها", "Index", new { requestType = "رد شده" }, new { style = "margin:5px; padding:10px; background-color:chartreuse;" })
+    @*<a href="#" style="margin:5px; padding:10px; background-color:chartreuse;">رد شده ها</a>*@
+
+    @Html.ActionLink("در انتظار تایید ها", "Index", new { requestType = "در انتظار تایید"} , new { style = "margin:5px; padding:10px; background-color:chartreuse;" })
+    @*<a href="#" style="margin:5px; padding:10px; background-color:chartreuse;">در انتظار تایید ها</a>*@
+
+    @Html.ActionLink("تایید شده ها", "Index", new { requestType = "تایید شده"}, new { style = "margin:5px; padding:10px; background-color:chartreuse;" })
+    @*<a href="#" style="margin:5px; padding:10px; background-color:chartreuse;">تایید شده ها</a>*@
+
+</div>
+
+<table class="table" dir="rtl" style="color:black">
+    <tr dir="rtl">
         <th>
             @Html.DisplayNameFor(model => model.Name)
         </th>
@@ -70,7 +98,7 @@
 
     @foreach (var item in Model)
     {
-        <tr>
+        <tr dir="rtl">
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
@@ -81,13 +109,34 @@
                 @Html.DisplayFor(modelItem => item.DayOfWeek)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ArrivalTime)
+                @if (item.State == "در انتظار تایید" && item.ArrivalTime != "-")
+                {
+                    <label>در خواست ارسال شد</label>
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.ArrivalTime)
+                }
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ExitTime)
+                @if (item.State == "در انتظار تایید" && item.ExitTime != "-")
+                {
+                    <label>در خواست ارسال شد</label>
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.ExitTime)
+                }
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.WorkingTime)
+                @if (item.State == "در انتظار تایید")
+                {
+                    <label>-</label>
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.WorkingTime)
+                }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.State)
@@ -101,6 +150,6 @@
     }
 
 </table>
-<h3 dir="rtl">
+<h3 dir="rtl" style="color:black">
     مدت زمان کار: @ViewBag.AllWorkingTime
 </h3>

@@ -6,6 +6,15 @@
     <title>@ViewBag.Title - سامانه ی ورود و خروج</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    <style>
+    body{
+        background-image: url('../../Image/cool-background.png');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+  </style>
 
 </head>
 <body >
@@ -20,7 +29,7 @@
                 
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
+                <ul class="nav navbar-nav navbar-right">
                     <li>@Html.ActionLink("صفحه ی اصلی", "Index", "Home")</li>
 
                     @*@if (Request.IsAuthenticated && User.IsInRole("Admin")) {

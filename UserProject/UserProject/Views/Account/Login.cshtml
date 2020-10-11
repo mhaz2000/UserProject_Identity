@@ -4,46 +4,57 @@
     ViewBag.Title = "ورود به حساب کاربری";
 }
 
+<head>
+    <style>
+        a{
+            color:black;
+        }
+        a:hover{
+            color:wheat
+        }
+    </style>
+</head>
+
 <h2 dir="rtl">@ViewBag.Title.</h2>
-<div class="row">
-    <div class="col-md-8">
+<div class="row" >
+    <div class="col-md-12">
         <section id="loginForm">
             @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" })) {
                 @Html.AntiForgeryToken()
                 
                 <hr />
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                <div class="form-group">
-                    @Html.Label("ایمیل", new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
+                <div class="form-group" dir="rtl">
+                    @Html.Label("ایمیل", new { @class = "col-md-12 control-label" })
+                    <div class="col-md-12">
                         @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
                     </div>
                 </div>
-                <div class="form-group">
-                    @Html.Label("رمز عبور", new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
+                <div class="form-group" dir="rtl">
+                    @Html.Label("رمز عبور", new { @class = "col-md-12 control-label" })
+                    <div class="col-md-12">
                         @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                     </div>
                 </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <div class="checkbox">
+                @*<div class="form-group" dir="rtl">
+                    <div class="col-md-offset-2 col-md-10" >
+                        <div class="checkbox" dir="rtl">
                             @Html.CheckBoxFor(m => m.RememberMe)
                             @Html.Label("مرا به یاد بیاور")
                         </div>
                     </div>
-                </div>
-                <div class="form-group">
+                </div>*@
+                <div class="form-group" dir="rtl">
                     <div class="col-md-offset-2 col-md-10">
                         <input type="submit" value="ورود" class="btn btn-default" />
                     </div>
                 </div>
-                <p>
+                <p dir="rtl">
                     @Html.ActionLink("ثبت حساب جدید", "Register")
                 </p>
-                <p>
+                <p dir="rtl">
                     @Html.ActionLink("فراموشی رمز", "ForgotPassword")
                 </p>
             }

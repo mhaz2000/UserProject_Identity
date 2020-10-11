@@ -6,13 +6,30 @@
     ViewBag.Title = "Index";
 }
 
+    <head>
+        <style>
+            a {
+                color: black;
+                text-decoration: none;
+            }
+
+                a:hover {
+                    color: blue;
+                }
+
+            td, th, tr {
+                text-align: center;
+            }
+        </style>
+    </head>
+
 <h2 dir="rtl">لیست کاربران</h2>
 
 @*<p>
         @Html.ActionLink("Create New", "Create")
     </p>*@
-<table class="table">
-    <tr>
+<table class="table" dir="rtl" style="color:black">
+    <tr dir="rtl">
         <th>
             @Html.DisplayNameFor(model=>model.Name)
         </th>
@@ -26,7 +43,7 @@
 
     @foreach (var item in Model)
     {
-        <tr>
+        <tr dir="rtl">
             <td>
                 @*@Html.DisplayFor(modelItem => item.UserName)*@
                 @Html.ActionLink(item.Name, "Index", "Requests", new { ID = item.ID }, null)
