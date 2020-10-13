@@ -38,19 +38,22 @@ namespace UserProject
             }
             return dayOfWeek;
         }
+
+
+
         /// <summary>
         /// create view table
         /// </summary>
         /// <param name="requests"></param>
         /// <returns></returns>
-        public static IEnumerable<RequestView> SetRequest(IEnumerable<Request> requests)
+        public static List<RequestView> SetRequest(IEnumerable<Request> requests)
         {
-
             int hours = 0;
             int minutes = 0;
-            System.Globalization.PersianCalendar pc = new System.Globalization.PersianCalendar();
-            List<RequestView> RequestViews = new List<RequestView>();
 
+            System.Globalization.PersianCalendar pc = new System.Globalization.PersianCalendar();
+
+            List<RequestView> RequestViews = new List<RequestView>();
             List<string> dateTimes = new List<string>();
 
 
@@ -66,125 +69,74 @@ namespace UserProject
                 {
                     //create table without exit time
                     if (v.Type == "ورود")
-                        RequestViews.Add(new RequestView()
-                        {
-                            NationalCode = v.User.NationalCode,
-                            UserID = v.UserID,
-                            DayOfWeek = dayOfWeek,
-                            State = v.State,
-                            WorkingTime = "-",
-                            ID = v.RequestID,
-                            Name = v.User.Name,
-                            Date = pc.GetYear(v.RequestTime) + "/" + pc.GetMonth(v.RequestTime).ToString("00") + "/" + pc.GetDayOfMonth(v.RequestTime).ToString("00"),
-                            ArrivalTime = pc.GetHour(v.RequestTime).ToString("00") + ":" + pc.GetMinute(v.RequestTime).ToString("00"),
-                            ExitTime = "-"
-                        });
+                    {
+                        RequestViews.Add(new RequestView(v.RequestID, v.UserID, v.User.Name,
+                            pc.GetHour(v.RequestTime).ToString("00") + ":" + pc.GetMinute(v.RequestTime).ToString("00"), "-",
+                            pc.GetYear(v.RequestTime) + "/" + pc.GetMonth(v.RequestTime).ToString("00") + "/" + pc.GetDayOfMonth(v.RequestTime).ToString("00"),
+                            "-", v.State, dayOfWeek, v.User.NationalCode));
+                    }
                     //create table without arrival time
                     else if (v.Type == "خروج")
-                        RequestViews.Add(new RequestView()
-                        {
-                            NationalCode = v.User.NationalCode,
-                            UserID = v.UserID,
-                            DayOfWeek = dayOfWeek,
-                            State = v.State,
-                            WorkingTime = "-",
-                            ID = v.RequestID,
-                            Name = v.User.Name,
-                            Date = pc.GetYear(v.RequestTime) + "/" + pc.GetMonth(v.RequestTime).ToString("00") + "/" + pc.GetDayOfMonth(v.RequestTime).ToString("00"),
-                            ArrivalTime = "-",
-                            ExitTime = pc.GetHour(v.RequestTime).ToString("00") + ":" + pc.GetMinute(v.RequestTime).ToString("00")
-                        });
+                    {
+                        RequestViews.Add(new RequestView(v.RequestID, v.UserID, v.User.Name, "-",
+                            pc.GetHour(v.RequestTime).ToString("00") + ":" + pc.GetMinute(v.RequestTime).ToString("00"),
+                            pc.GetYear(v.RequestTime) + "/" + pc.GetMonth(v.RequestTime).ToString("00") + "/" + pc.GetDayOfMonth(v.RequestTime).ToString("00"),
+                            "-", v.State, dayOfWeek, v.User.NationalCode));
+                    }
                 }
                 else //if there is a duplicate date, sets exit or arrival time
                 {
                     string date = pc.GetYear(v.RequestTime).ToString() + "/" + pc.GetMonth(v.RequestTime).ToString("00") + "/" + pc.GetDayOfMonth(v.RequestTime).ToString("00");
-                    var Res = RequestViews.Where(w => w.Date == date && w.Name == v.User.Name && w.State==v.State).FirstOrDefault();
-                    if (Res == null)
-                    {
-                        if (v.Type == "ورود")
-                        {
-                            RequestViews.Add(new RequestView()
-                            {
-                                NationalCode = v.User.NationalCode,
-                                UserID = v.UserID,
-                                DayOfWeek = dayOfWeek,
-                                State = v.State,
-                                WorkingTime = "-",
-                                ID = v.RequestID,
-                                Name = v.User.Name,
-                                Date = pc.GetYear(v.RequestTime) + "/" + pc.GetMonth(v.RequestTime).ToString("00") + "/" + pc.GetDayOfMonth(v.RequestTime).ToString("00"),
-                                ArrivalTime = pc.GetHour(v.RequestTime).ToString("00") + ":" + pc.GetMinute(v.RequestTime).ToString("00"),
-                                ExitTime = "-"
-                            });
-                        }
-                        else
-                        {
-                            RequestViews.Add(new RequestView()
-                            {
-                                NationalCode = v.User.NationalCode,
-                                UserID = v.UserID,
-                                DayOfWeek = dayOfWeek,
-                                State = v.State,
-                                WorkingTime = "-",
-                                ID = v.RequestID,
-                                Name = v.User.Name,
-                                Date = pc.GetYear(v.RequestTime) + "/" + pc.GetMonth(v.RequestTime).ToString("00") + "/" + pc.GetDayOfMonth(v.RequestTime).ToString("00"),
-                                ArrivalTime = "-",
-                                ExitTime = pc.GetHour(v.RequestTime).ToString("00") + ":" + pc.GetMinute(v.RequestTime).ToString("00")
-                            });
-                        }
-                    }
-                    else if (Res.ExitTime == "-" && Res.State==v.State)
-                    {
+                    RequestView Res = RequestViews.Where(w => w.Date == date && w.NationalCode == v.User.NationalCode).FirstOrDefault();
 
+                    if (v.State == "رد شده")
+                        Res = RequestViews.Where(w => w.Date == date && w.NationalCode == v.User.NationalCode && w.State == "رد شده").FirstOrDefault();
+                    else
+                        Res = RequestViews.Where(w => w.Date == date && w.NationalCode == v.User.NationalCode && w.State != "رد شده").FirstOrDefault();
+
+                    if((Res is null && v.Type=="ورود") || (Res.State!=v.State && v.Type == "ورود"))
+                    {
+                        RequestViews.Add(new RequestView(v.RequestID, v.UserID, v.User.Name,
+                           pc.GetHour(v.RequestTime).ToString("00") + ":" + pc.GetMinute(v.RequestTime).ToString("00"), "-",
+                           pc.GetYear(v.RequestTime) + "/" + pc.GetMonth(v.RequestTime).ToString("00") + "/" + pc.GetDayOfMonth(v.RequestTime).ToString("00"),
+                           "-", v.State, dayOfWeek, v.User.NationalCode));
+                        continue;
+                    }
+                    else if((Res is null && v.Type == "خروج") || (Res.State != v.State && v.Type == "خروج"))
+                    {
+                        RequestViews.Add(new RequestView(v.RequestID, v.UserID, v.User.Name, "-",
+                            pc.GetHour(v.RequestTime).ToString("00") + ":" + pc.GetMinute(v.RequestTime).ToString("00"),
+                            pc.GetYear(v.RequestTime) + "/" + pc.GetMonth(v.RequestTime).ToString("00") + "/" + pc.GetDayOfMonth(v.RequestTime).ToString("00"),
+                            "-", v.State, dayOfWeek, v.User.NationalCode));
+                        continue;
+                    }
+
+                    if (Res.ExitTime == "-")
                         Res.ExitTime = pc.GetHour(v.RequestTime).ToString("00") + ":" + pc.GetMinute(v.RequestTime).ToString("00");
-                        string[] Arrival = Res.ArrivalTime.Split(':');
-                        string[] Exit = Res.ExitTime.Split(':');
-
-                        if (Convert.ToInt32(Arrival[1]) > Convert.ToInt32(Exit[1]))
-                        {
-                            hours = Convert.ToInt32(Exit[0]) - Convert.ToInt32(Arrival[0]) - 1;
-                            minutes = Convert.ToInt32(Exit[1]) - Convert.ToInt32(Arrival[1] + 60);
-
-                            Res.WorkingTime = (Convert.ToInt32(Exit[0]) - Convert.ToInt32(Arrival[0]) - 1).ToString("00") + ":" + (Convert.ToInt32(Exit[1]) - Convert.ToInt32(Arrival[1]) + 60).ToString("00");
-                        }
-                        else
-                        {
-                            hours = Convert.ToInt32(Exit[0]) - Convert.ToInt32(Arrival[0]);
-                            minutes = Convert.ToInt32(Exit[1]) - Convert.ToInt32(Arrival[1]);
-
-                            Res.WorkingTime = (Convert.ToInt32(Exit[0]) - Convert.ToInt32(Arrival[0])).ToString("00") + ":" + (Convert.ToInt32(Exit[1]) - Convert.ToInt32(Arrival[1])).ToString("00");
-                        }
-                        dateTimes.Remove(v.RequestTime.Date.ToString());
-
-                    }
-                    else if(Res.ArrivalTime == "-" && Res.State == v.State)
-                    {
+                    else
                         Res.ArrivalTime = pc.GetHour(v.RequestTime).ToString("00") + ":" + pc.GetMinute(v.RequestTime).ToString("00");
-                        string[] Arrival = Res.ArrivalTime.Split(':');
-                        string[] Exit = Res.ExitTime.Split(':');
 
-                        if (Convert.ToInt32(Arrival[1]) > Convert.ToInt32(Exit[1]))
-                        {
-                            hours = Convert.ToInt32(Exit[0]) - Convert.ToInt32(Arrival[0]) - 1;
-                            minutes = Convert.ToInt32(Exit[1]) - Convert.ToInt32(Arrival[1] + 60);
+                    string[] Arrival = Res.ArrivalTime.Split(':');
+                    string[] Exit = Res.ExitTime.Split(':');
 
-                            Res.WorkingTime = (Convert.ToInt32(Exit[0]) - Convert.ToInt32(Arrival[0]) - 1).ToString("00") + ":" + (Convert.ToInt32(Exit[1]) - Convert.ToInt32(Arrival[1]) + 60).ToString("00");
-                        }
-                        else
-                        {
-                            hours = Convert.ToInt32(Exit[0]) - Convert.ToInt32(Arrival[0]);
-                            minutes = Convert.ToInt32(Exit[1]) - Convert.ToInt32(Arrival[1]);
+                    if (Convert.ToInt32(Arrival[1]) > Convert.ToInt32(Exit[1]))
+                    {
+                        hours = Convert.ToInt32(Exit[0]) - Convert.ToInt32(Arrival[0]) - 1;
+                        minutes = Convert.ToInt32(Exit[1]) - Convert.ToInt32(Arrival[1] + 60);
 
-                            Res.WorkingTime = (Convert.ToInt32(Exit[0]) - Convert.ToInt32(Arrival[0])).ToString("00") + ":" + (Convert.ToInt32(Exit[1]) - Convert.ToInt32(Arrival[1])).ToString("00");
-                        }
-                        dateTimes.Clear();
+                        Res.WorkingTime = (Convert.ToInt32(Exit[0]) - Convert.ToInt32(Arrival[0]) - 1).ToString("00") + ":" + (Convert.ToInt32(Exit[1]) - Convert.ToInt32(Arrival[1]) + 60).ToString("00");
                     }
-                    
+                    else
+                    {
+                        hours = Convert.ToInt32(Exit[0]) - Convert.ToInt32(Arrival[0]);
+                        minutes = Convert.ToInt32(Exit[1]) - Convert.ToInt32(Arrival[1]);
+
+                        Res.WorkingTime = (Convert.ToInt32(Exit[0]) - Convert.ToInt32(Arrival[0])).ToString("00") + ":" + (Convert.ToInt32(Exit[1]) - Convert.ToInt32(Arrival[1])).ToString("00");
+                    }
+
                 }
             }
-
-            return RequestViews.OrderByDescending(o => o.Date);
+            return RequestViews.OrderByDescending(o => o.Date).ToList();
         }
 
 

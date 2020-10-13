@@ -11,6 +11,23 @@ namespace UserProject
     /// </summary>
     public class RequestView
     {
+        public RequestView()
+        {
+
+        }
+        public RequestView(Guid ID,string UserID,string Name,string Arrivaltime,string ExitTime,string Date,string WorkingTime,string State,string DayOfWeek,string NationalCode)
+        {
+            this.ID = ID;
+            this.UserID = UserID;
+            this.Name = Name;
+            this.ArrivalTime = Arrivaltime;
+            this.ExitTime = ExitTime;
+            this.Date = Date;
+            this.WorkingTime = WorkingTime;
+            this.State = State;
+            this.DayOfWeek = DayOfWeek;
+            this.NationalCode = NationalCode;
+        }
         public Guid ID { get; set; }
         public string UserID { get; set; }
         [Display(Name ="نام و نام خانوادگی")]
