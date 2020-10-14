@@ -111,9 +111,9 @@
             <td>
                 @if (item.State == "در انتظار تایید")
                 {
-                    @Html.ActionLink("تایید درخواست | ", "SetState", new { id = item.UserID, date = item.Date, state = "تایید شده" })
+                    @Html.ActionLink("تایید درخواست | ", "SetState", new { id = item.UserID, date = item.Date, RequestState = "تایید شده" })
 
-                    @Html.ActionLink("رد درخواست", "SetState", new { id = item.UserID, date = item.Date, state = "رد شده" })
+                    @Html.ActionLink("رد درخواست", "SetState", new { id = item.UserID, date = item.Date, RequestState = "رد شده" })
                 }
             </td>
             @*<td>

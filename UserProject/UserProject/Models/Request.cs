@@ -5,6 +5,7 @@ using System.Web;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using IdentitySample.Models;
+using System.ComponentModel;
 
 namespace UserProject
 {
@@ -18,19 +19,20 @@ namespace UserProject
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid RequestID { get; set; }
         [Required]
-        [Display(Name ="نوع درخواست")]
-        public string Type { get; set; }
+        [Display(Name = "نوع درخواست")]
+        public RequestType Type { get; set; }
         [Required]
         public DateTime RequestTime { get; set; }
 
+        //public string State { get; set; }
         [Required]
-        [Display(Name ="وضعیت درخواست")]
-        public string State { get; set; }
+        [Display(Name = "وضعیت")]
+        public State State { get; set; }
 
-        [Display(Name ="تاریخ")]
+        [Display(Name = "تاریخ")]
         [NotMapped]
         public string Date { get; set; }
-        [Display(Name ="ساعت")]
+        [Display(Name = "ساعت")]
         [NotMapped]
         public string Time { get; set; }
 
@@ -41,7 +43,11 @@ namespace UserProject
     }
     public enum RequestType
     {
-        ورود,
-        خروج
+        [Display(Name = "ورود")]
+        arrival,
+        [Display(Name ="خروج")]
+        exit
     }
+    public enum State { accepted, rejected, Processing, all }
+
 }

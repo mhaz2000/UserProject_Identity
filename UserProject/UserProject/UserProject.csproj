@@ -234,7 +234,9 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Request.cs" />
     <Compile Include="Services\AllWorkTimeCalculation.cs" />
+    <Compile Include="Services\EnumToString.cs" />
     <Compile Include="Services\SetUserInfo.cs" />
+    <Compile Include="ViewClasses\DroplistOption.cs" />
     <Compile Include="ViewClasses\RequestView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repsitories\IRequestRepository.cs" />

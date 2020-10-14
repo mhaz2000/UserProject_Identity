@@ -68,20 +68,20 @@ namespace UserProject
                 if (dateTimes.Count() == dateTimes.Distinct().Count())
                 {
                     //create table without exit time
-                    if (v.Type == "ورود")
+                    if (v.Type == RequestType.arrival)
                     {
                         RequestViews.Add(new RequestView(v.RequestID, v.UserID, v.User.Name,
                             pc.GetHour(v.RequestTime).ToString("00") + ":" + pc.GetMinute(v.RequestTime).ToString("00"), "-",
                             pc.GetYear(v.RequestTime) + "/" + pc.GetMonth(v.RequestTime).ToString("00") + "/" + pc.GetDayOfMonth(v.RequestTime).ToString("00"),
-                            "-", v.State, dayOfWeek, v.User.NationalCode));
+                            "-", EnumToString.StateDiscovery(v.State), dayOfWeek, v.User.NationalCode));
                     }
                     //create table without arrival time
-                    else if (v.Type == "خروج")
+                    else 
                     {
                         RequestViews.Add(new RequestView(v.RequestID, v.UserID, v.User.Name, "-",
                             pc.GetHour(v.RequestTime).ToString("00") + ":" + pc.GetMinute(v.RequestTime).ToString("00"),
                             pc.GetYear(v.RequestTime) + "/" + pc.GetMonth(v.RequestTime).ToString("00") + "/" + pc.GetDayOfMonth(v.RequestTime).ToString("00"),
-                            "-", v.State, dayOfWeek, v.User.NationalCode));
+                            "-", EnumToString.StateDiscovery(v.State), dayOfWeek, v.User.NationalCode));
                     }
                 }
                 else //if there is a duplicate date, sets exit or arrival time
@@ -89,25 +89,25 @@ namespace UserProject
                     string date = pc.GetYear(v.RequestTime).ToString() + "/" + pc.GetMonth(v.RequestTime).ToString("00") + "/" + pc.GetDayOfMonth(v.RequestTime).ToString("00");
                     RequestView Res = RequestViews.Where(w => w.Date == date && w.NationalCode == v.User.NationalCode).FirstOrDefault();
 
-                    if (v.State == "رد شده")
+                    if (v.State == State.rejected)
                         Res = RequestViews.Where(w => w.Date == date && w.NationalCode == v.User.NationalCode && w.State == "رد شده").FirstOrDefault();
                     else
                         Res = RequestViews.Where(w => w.Date == date && w.NationalCode == v.User.NationalCode && w.State != "رد شده").FirstOrDefault();
 
-                    if((Res is null && v.Type=="ورود") || (Res.State!=v.State && v.Type == "ورود"))
+                    if((Res is null && v.Type==RequestType.arrival) || (Res.State!=EnumToString.StateDiscovery(v.State) && v.Type == RequestType.arrival))
                     {
                         RequestViews.Add(new RequestView(v.RequestID, v.UserID, v.User.Name,
                            pc.GetHour(v.RequestTime).ToString("00") + ":" + pc.GetMinute(v.RequestTime).ToString("00"), "-",
                            pc.GetYear(v.RequestTime) + "/" + pc.GetMonth(v.RequestTime).ToString("00") + "/" + pc.GetDayOfMonth(v.RequestTime).ToString("00"),
-                           "-", v.State, dayOfWeek, v.User.NationalCode));
+                           "-", EnumToString.StateDiscovery(v.State), dayOfWeek, v.User.NationalCode));
                         continue;
                     }
-                    else if((Res is null && v.Type == "خروج") || (Res.State != v.State && v.Type == "خروج"))
+                    else if((Res is null && v.Type == RequestType.exit) || (Res.State != EnumToString.StateDiscovery(v.State) && v.Type == RequestType.exit))
                     {
                         RequestViews.Add(new RequestView(v.RequestID, v.UserID, v.User.Name, "-",
                             pc.GetHour(v.RequestTime).ToString("00") + ":" + pc.GetMinute(v.RequestTime).ToString("00"),
                             pc.GetYear(v.RequestTime) + "/" + pc.GetMonth(v.RequestTime).ToString("00") + "/" + pc.GetDayOfMonth(v.RequestTime).ToString("00"),
-                            "-", v.State, dayOfWeek, v.User.NationalCode));
+                            "-", EnumToString.StateDiscovery(v.State), dayOfWeek, v.User.NationalCode));
                         continue;
                     }
 
@@ -161,7 +161,7 @@ namespace UserProject
                 NationalCode = request.User.NationalCode,
                 UserID = request.UserID,
                 DayOfWeek = SetDayOfWeek(request.RequestTime),
-                State = request.State,
+                State = EnumToString.StateDiscovery(request.State),
                 WorkingTime = "-",
                 ID = request.RequestID,
                 Name = request.User.Name,

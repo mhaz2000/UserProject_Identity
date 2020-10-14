@@ -121,14 +121,14 @@ namespace UserProject.Controllers
             var Res = repository.GetRequestsByDate(request.RequestTime, User.Identity.GetUserId());
             foreach (var index in Res)
             {
-                if (index.Type == request.Type && index.State!="رد شده")
+                if (index.Type == request.Type && index.State!=State.rejected)
                 {
                     ViewBag.Message = "در یک تاریخ نمی توانید بیش از یک ورود یا خروج ثبت کنید!";
                     return View(request);
                 }
             }
 
-            request.State = "در انتظار تایید";
+            request.State = State.Processing;
             repository.AddRequest(request, User.Identity.GetUserId());
             repository.Save();
             return RedirectToAction("Index");
@@ -147,9 +147,24 @@ namespace UserProject.Controllers
             SelectList list = new SelectList(Users);
             ViewBag.AllUsers = list;
 
-            
+            State requestState;
+            switch (state)
+            {
+                case "رد شده":
+                    requestState = State.rejected;
+                    break;
+                case "تایید شده":
+                    requestState = State.rejected;
+                    break;
+                    case "دز انتظار تایید":
+                    requestState = State.Processing;
+                    break;
+                default:
+                    requestState = State.all;
+                    break;
+            }
             //Show all requests of the selected person
-            List<Request> requests = repository.GetRequestsByNameAndState(name, state);
+            List<Request> requests = repository.GetRequestsByNameAndState(name, requestState);
 
             if (!string.IsNullOrEmpty(date1) && !string.IsNullOrEmpty(date2))
             {
@@ -175,16 +190,27 @@ namespace UserProject.Controllers
         /// <param name="id"></param>
         /// <param name="State"></param>
         /// <returns></returns>
-        public ActionResult SetState(DateTime date, string State, string id)
+        public ActionResult SetState(DateTime date, string RequestState, string id)
         {
             System.Globalization.PersianCalendar pc = new System.Globalization.PersianCalendar();
 
             var request = repository.GetRequestsByDate(new DateTime(date.Year, date.Month, date.Day, pc), id);
-            request = request.Where(w => w.State != "رد شده").ToList();
+            request = request.Where(w => w.State != State.rejected).ToList();
 
             foreach (var v in request)
             {
-                v.State = State;
+                switch(RequestState)
+                {
+                    case "رد شده":
+                        v.State = State.rejected;
+                        break;
+                    case "تایید شده":
+                        v.State = State.accepted;
+                        break;
+                    default:
+                        v.State = State.Processing;
+                        break;
+                }
             }
             repository.Save();
             return RedirectToAction("AllRequests");
