@@ -24,7 +24,7 @@ namespace UserProject.Controllers
             repository = new RequestRepository();
         }
         // GET: Requests
-        public ActionResult Index( string date1, string date2, string ID,string requestType)
+        public ActionResult Index( string date1, string date2, string ID,State? requestType)
         {
             IEnumerable<Request> requests = new List<Request>();
             //get current date in persian format
@@ -61,31 +61,33 @@ namespace UserProject.Controllers
             //else
             //requestViews = requestViews.OrderBy(o => o.Name).ThenBy(o => o.Date).ToList();
 
-            if (string.IsNullOrEmpty(requestType) || requestType == "تایید شده")
-                requestViews = requestViews.Where(w => w.State == "تایید شده").ToList();
-            else if (requestType == "رد شده")
-                requestViews = requestViews.Where(w => w.State == "رد شده").ToList();
+            if (requestType == State.accepted)
+                requestViews = requestViews.Where(w => w.State == State.accepted).ToList();
+            else if (requestType == State.rejected)
+                requestViews = requestViews.Where(w => w.State == State.rejected).ToList();
+            else if(requestType == State.Processing)
+                requestViews = requestViews.Where(w => w.State == State.Processing).ToList();
             else
-                requestViews = requestViews.Where(w => w.State == "در انتظار تایید").ToList();
+                requestViews = requestViews.Where(w => w.State == State.accepted).ToList();
 
 
             return View(requestViews);
         }
 
         // GET: Requests/Details/5
-        public ActionResult Details(Guid? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Request request = repository.GetRequestByID(id);
-            if (request == null)
-            {
-                return HttpNotFound();
-            }
-            return View(SetRequestView.SetRequest(request));
-        }
+        //public ActionResult Details(Guid? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Request request = repository.GetRequestByID(id);
+        //    if (request == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(SetRequestView.SetRequest(request));
+        //}
 
         // GET: Requests/Create
         public ActionResult Create()
@@ -138,7 +140,7 @@ namespace UserProject.Controllers
         }
 
         // GET: Requests/Edit/5
-        public ActionResult AllRequests(string name, string state, string date1, string date2)
+        public ActionResult AllRequests(string name, State? state, string date1, string date2)
         {
             ViewBag.CurrentDate = GetPersianTime.GetPersainDateTime()[0];
 
@@ -147,24 +149,8 @@ namespace UserProject.Controllers
             SelectList list = new SelectList(Users);
             ViewBag.AllUsers = list;
 
-            State requestState;
-            switch (state)
-            {
-                case "رد شده":
-                    requestState = State.rejected;
-                    break;
-                case "تایید شده":
-                    requestState = State.rejected;
-                    break;
-                    case "دز انتظار تایید":
-                    requestState = State.Processing;
-                    break;
-                default:
-                    requestState = State.all;
-                    break;
-            }
-            //Show all requests of the selected person
-            List<Request> requests = repository.GetRequestsByNameAndState(name, requestState);
+
+            List<Request> requests = repository.GetRequestsByNameAndState(name, state);
 
             if (!string.IsNullOrEmpty(date1) && !string.IsNullOrEmpty(date2))
             {
@@ -190,7 +176,7 @@ namespace UserProject.Controllers
         /// <param name="id"></param>
         /// <param name="State"></param>
         /// <returns></returns>
-        public ActionResult SetState(DateTime date, string RequestState, string id)
+        public ActionResult SetState(DateTime date, State RequestState, string id)
         {
             System.Globalization.PersianCalendar pc = new System.Globalization.PersianCalendar();
 
@@ -199,18 +185,7 @@ namespace UserProject.Controllers
 
             foreach (var v in request)
             {
-                switch(RequestState)
-                {
-                    case "رد شده":
-                        v.State = State.rejected;
-                        break;
-                    case "تایید شده":
-                        v.State = State.accepted;
-                        break;
-                    default:
-                        v.State = State.Processing;
-                        break;
-                }
+                v.State = RequestState;
             }
             repository.Save();
             return RedirectToAction("AllRequests");

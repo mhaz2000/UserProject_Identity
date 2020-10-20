@@ -41,13 +41,6 @@ namespace UserProject
         public string UserID { get; set; }
         public virtual ApplicationUser User { get; set; }
     }
-    public enum RequestType
-    {
-        [Display(Name = "ورود")]
-        arrival,
-        [Display(Name ="خروج")]
-        exit
-    }
-    public enum State { accepted, rejected, Processing, all }
+    
 
 }

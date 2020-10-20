@@ -1,8 +1,13 @@
-﻿@model IEnumerable<UserProject.RequestView>
+﻿@using UserProject
+@using System.ComponentModel.DataAnnotations;
+
+
+@model IEnumerable<UserProject.RequestView>
 
 @{
     ViewBag.Title = "Index";
 }
+
 
 <head>
     <style>
@@ -55,13 +60,13 @@
 
 }
 <div style="margin:20px">
-    @Html.ActionLink("رد شده ها", "Index", new { requestType = "رد شده" }, new { style = "margin:5px; padding:10px; background-color:chartreuse;" })
+    @Html.ActionLink("رد شده ها", "Index", new { requestType = State.rejected }, new { style = "margin:5px; padding:10px; background-color:chartreuse;" })
     @*<a href="#" style="margin:5px; padding:10px; background-color:chartreuse;">رد شده ها</a>*@
 
-    @Html.ActionLink("در انتظار تایید ها", "Index", new { requestType = "در انتظار تایید"} , new { style = "margin:5px; padding:10px; background-color:chartreuse;" })
+    @Html.ActionLink("در انتظار تایید ها", "Index", new { requestType = State.Processing }, new { style = "margin:5px; padding:10px; background-color:chartreuse;" })
     @*<a href="#" style="margin:5px; padding:10px; background-color:chartreuse;">در انتظار تایید ها</a>*@
 
-    @Html.ActionLink("تایید شده ها", "Index", new { requestType = "تایید شده"}, new { style = "margin:5px; padding:10px; background-color:chartreuse;" })
+    @Html.ActionLink("تایید شده ها", "Index", new { requestType = State.accepted }, new { style = "margin:5px; padding:10px; background-color:chartreuse;" })
     @*<a href="#" style="margin:5px; padding:10px; background-color:chartreuse;">تایید شده ها</a>*@
 
 </div>
@@ -109,7 +114,7 @@
                 @Html.DisplayFor(modelItem => item.DayOfWeek)
             </td>
             <td>
-                @if (item.State == "در انتظار تایید" && item.ArrivalTime != "-")
+                @if (item.State == UserProject.State.Processing && item.ArrivalTime != "-")
                 {
                     <label>در خواست ارسال شد</label>
                 }
@@ -119,7 +124,7 @@
                 }
             </td>
             <td>
-                @if (item.State == "در انتظار تایید" && item.ExitTime != "-")
+                @if (item.State == UserProject.State.Processing && item.ExitTime != "-")
                 {
                     <label>در خواست ارسال شد</label>
                 }
@@ -129,7 +134,7 @@
                 }
             </td>
             <td>
-                @if (item.State == "در انتظار تایید")
+                @if (item.State == UserProject.State.Processing)
                 {
                     <label>-</label>
                 }
@@ -139,7 +144,8 @@
                 }
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.State)
+                @{string x = item.State.DisplayName();} 
+                @Html.DisplayFor(modelItem => x)
             </td>
             <td>
                 @*@Html.ActionLink("Edit", "Edit", new { id = item.ID }) |*@
@@ -153,3 +159,4 @@
 <h3 dir="rtl" style="color:black">
     مدت زمان کار: @ViewBag.AllWorkingTime
 </h3>
+

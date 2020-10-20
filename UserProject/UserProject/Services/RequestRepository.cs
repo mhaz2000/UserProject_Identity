@@ -177,13 +177,17 @@ namespace UserProject
         /// <param name="name"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        public List<Request> GetRequestsByNameAndState(string name, State state)
+        public List<Request> GetRequestsByNameAndState(string name, State? state)
         {
+            if (state is null)
+                state = State.all;
+
+
             if (state==State.all && string.IsNullOrEmpty(name))
                 return GetAllRequests();
             else if (!string.IsNullOrEmpty(name) && state == State.all)
                 return DB.Requests.Where(w => w.User.Name == name).ToList();
-            else if (state == State.all && string.IsNullOrEmpty(name))
+            else if (state != State.all && string.IsNullOrEmpty(name))
                 return DB.Requests.Where(w => w.State == state).ToList();
             else
                 return DB.Requests.Where(w => w.State == state && w.User.Name == name).ToList();

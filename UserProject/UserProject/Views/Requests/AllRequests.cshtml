@@ -1,4 +1,5 @@
-﻿@model IEnumerable<UserProject.RequestView>
+﻿@using UserProject
+@model IEnumerable<UserProject.RequestView>
 
 @{
 
@@ -35,17 +36,23 @@
 
     @using (Html.BeginForm())
     {
-        @Html.DropDownList("name", ViewBag.AllUsers as SelectList, "نام کاربر", new { onchange = "this.form.submit();" })
+        @Html.DropDownList("name", ViewBag.AllUsers as SelectList, "نام کاربر", new { onchange = "this.form.submit();", @class = "form-control" })
+        <br />
+
+        @Html.DropDownList("State",
+   EnumHelper.GetSelectList(typeof(State)),
+   "وضعیت",
+   new { onchange = "this.form.submit();", @class = "form-control" })
 
 
-        List<SelectListItem> items = new List<SelectListItem>();
-        items.Add(new SelectListItem { Text = "تایید شده", Value = "تایید شده" });
-        items.Add(new SelectListItem { Text = "رد شده", Value = "رد شده" });
-        items.Add(new SelectListItem { Text = "در انتظار تایید", Value = "در انتظار تایید" });
-        items.Add(new SelectListItem { Text = "همه", Value = "همه", Selected = true });
+        @*List<SelectListItem> items = new List<SelectListItem>();
+            items.Add(new SelectListItem { Text = "تایید شده", Value = "تایید شده" });
+            items.Add(new SelectListItem { Text = "رد شده", Value = "رد شده" });
+            items.Add(new SelectListItem { Text = "در انتظار تایید", Value = "در انتظار تایید" });
+            items.Add(new SelectListItem { Text = "همه", Value = "همه", Selected = true });
 
 
-        @Html.DropDownList("state", items, "وضعیت", new { onchange = "this.form.submit();" })
+            @Html.DropDownList("state", items, "وضعیت", new { onchange = "this.form.submit();" })*@
 
     }
 
@@ -106,14 +113,17 @@
                 @Html.DisplayFor(modelItem => item.WorkingTime)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.State)
+                @{
+                    string x = item.State.DisplayName();
+                }
+                @Html.DisplayFor(modelItem => x)
             </td>
             <td>
-                @if (item.State == "در انتظار تایید")
+                @if (item.State == UserProject.State.Processing)
                 {
-                    @Html.ActionLink("تایید درخواست | ", "SetState", new { id = item.UserID, date = item.Date, RequestState = "تایید شده" })
+                    @Html.ActionLink("تایید درخواست | ", "SetState", new { id = item.UserID, date = item.Date, RequestState = State.accepted })
 
-                    @Html.ActionLink("رد درخواست", "SetState", new { id = item.UserID, date = item.Date, RequestState = "رد شده" })
+                    @Html.ActionLink("رد درخواست", "SetState", new { id = item.UserID, date = item.Date, RequestState = State.rejected })
                 }
             </td>
             @*<td>

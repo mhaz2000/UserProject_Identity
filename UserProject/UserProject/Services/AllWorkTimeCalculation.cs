@@ -9,21 +9,21 @@ namespace UserProject
     {
         public static string AllWorkTimeSum(List<RequestView> requests)
         {
-            int hours = 0;
-            int minutes = 0;
-            foreach (var requ in requests)
-            {
-                //bug
-                if (requ.State == "رد شده" || requ.State == "در انتظار تایید" || requ.ExitTime == "-" || requ.ArrivalTime == "-")
-                    continue;
-                string[] time = requ.WorkingTime.Split(':');
-                hours += Convert.ToInt32(time[0]);
-                minutes += Convert.ToInt32(time[1]);
-            }
+            var time=requests.Where(w=>w.State==State.accepted).Select(s => s.WorkingTimebyminute).Sum();
+            return (time/ 60) + ":" + (time % 60).ToString("00");
+
+            //int time= 0;
+            //foreach (var requ in requests)
+            //{
+            //    //bug
+            //    if (requ.State == State.rejected || requ.State == State.Processing || requ.ExitTime == "-" || requ.ArrivalTime == "-")
+            //        continue;
+            //    time += requ.WorkingTime;
+            //}
 
 
 
-            return (hours + minutes / 60) + ":" + (minutes % 60).ToString("00");
+            //return (time/ 60) + ":" + (time % 60).ToString("00");
         }
     }
 }
